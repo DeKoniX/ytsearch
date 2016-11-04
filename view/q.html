@@ -5,7 +5,9 @@
     <title>YTSearch</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
   <body>
     <div class="container">
@@ -16,6 +18,31 @@
           <label for="InputQ">Запрос</label>
           <input type="text" name="query" placeholder="Запрос" class="form-control">
         </div>
+        <div class="form-group">
+          <label class="radio-inlint">
+            <input type="radio" name="order" value="relevance" checked> Актуальность
+          </label>
+          <label class="radio-inlint">
+            <input type="radio" name="order" value="date"> Дата
+          </label>
+          <label class="radio-inlint">
+            <input type="radio" name="order" value="rating"> Рейтинг
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="radio-inlint">
+            <input type="radio" name="type" value="playlist" checked> Плейлист
+          </label>
+          <label class="radio-inlint">
+            <input type="radio" name="type" value="video"> Видео
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="InputChan">ID канала</label>
+          <input type="text" name="channelID" placeholder="Оставте пустым если не используется" class="form-control">
+        </div>
+
+
         <button type="submit" name="button" class="btn btn-default">Найти</button>
       </form>
     </div>

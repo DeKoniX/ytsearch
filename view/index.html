@@ -5,23 +5,29 @@
     <title>YTSearch - {{.Query}}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
   <body>
     <div class="container">
       <h3>Поиск плейлистов в YouTube</h3>
       <h4>{{.Query}}</h4>
+      <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду без видео</button>
+      <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=137/best {{range .RandURL}} {{.}} {{end}}">Скопировать команду с видео</button>
 
       <div class="row">
         {{range .Items}}
         <div class="col-sm-6 col-md-4">
           <div class="thumbnail">
-            <a href="https://www.youtube.com/playlist?list={{.ID}}">
+            <a href="{{.URL}}">
               <img src="{{.ThumbURL}}" alt="{{.Title}}"/>
             </a>
             <div class="caption">
-              <h4>{{.Title}}</h4>
+              <a href="{{.URL}}"><h4>{{.Title}}</h4></a>
               <p>{{.Description}}</p>
+              <p>{{.PublishedAT}}</p>
               <p><a href="https://www.youtube.com/channel/{{.ChannelID}}" class="btn btn-default">{{.ChannelTitle}}</a></p>
             </div>
           </div>
@@ -29,5 +35,8 @@
         {{end}}
       </div>
     </div>
+    <pre class="mpv">mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
+    <pre class="mpv">mpv --ytdl-format=137/best {{range .RandURL}} {{.}} {{end}}</pre>
   </body>
+  <script type="text/javascript" src="index.js"></script>
 </html>
