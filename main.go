@@ -17,7 +17,7 @@ import (
 
 const developerKey = "AIzaSyDnNqubCXqrNHD8w_GHsyRK7X6GU-k4MzU"
 
-type YTItem struct {
+type ytItem struct {
 	ID           string
 	ChannelTitle string
 	Title        string
@@ -28,29 +28,37 @@ type YTItem struct {
 	URL          string
 }
 
-type YTSearch struct {
+type ytSearch struct {
 	Query     string
 	Order     string
 	Type      string
 	ChannelID string
-	Items     []YTItem
+	Items     []ytItem
 	RandURL   []string
 }
 
+var dataBase DB
+
 func main() {
-	http.HandleFunc("/", BasicAuth(indexHandler))
-	http.HandleFunc("/q", BasicAuth(viewHandler))
-	http.HandleFunc("/index.js", jsHandler)
+	dataBase, _ = initDB()
+
+	fs := http.FileServer(http.Dir("./view/static"))
+	http.Handle("/static/", http.StripPrefix("/static", fs))
+
+	http.HandleFunc("/", basicAuth(indexHandler))
+	http.HandleFunc("/q", basicAuth(viewHandler))
+	http.HandleFunc("/channeladd", basicAuth(channelADDHandler))
+	http.HandleFunc("/channeldelete", basicAuth(channelDeleteHandler))
 	http.HandleFunc("/favicon.png", faviconHandler)
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func BasicAuth(handler http.HandlerFunc) http.HandlerFunc {
+func basicAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "dekonix"
 		password := "hamster"
 		authError := func() {
-			w.Header().Set("WWW-Authenticate", "Basic realm=\"Zork\"")
+			w.Header().Set("WWW-Authenticate", "Basic realm=\"YTSearch\"")
 			http.Error(w, "authorization failed", http.StatusUnauthorized)
 		}
 		auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
@@ -72,20 +80,34 @@ func BasicAuth(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func jsHandler(w http.ResponseWriter, r *http.Request) {
-	file, _ := ioutil.ReadFile("view/index.js")
-	fmt.Fprint(w, string(file))
-}
-
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
 	file, _ := ioutil.ReadFile("view/favicon.png")
 	fmt.Fprint(w, string(file))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	var p YTSearch
+	var p []Rows
+	p, _ = dataBase.Select()
 	t, _ := template.ParseFiles("./view/q.html")
 	t.Execute(w, p)
+}
+
+func channelADDHandler(w http.ResponseWriter, r *http.Request) {
+	channelID := r.FormValue("channel_id")
+	err := addYTChannel(channelID)
+	if err != nil {
+		log.Println(err)
+	}
+	http.Redirect(w, r, "/", 301)
+}
+
+func channelDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	channelID := r.FormValue("channelid")
+	err := dataBase.Delete(channelID)
+	if err != nil {
+		log.Println("DataBase Delete: ", err)
+	}
+	http.Redirect(w, r, "/", 301)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,12 +116,41 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	typeQ := r.FormValue("type")
 	channelID := r.FormValue("channelID")
 
-	ytsearch := ytSearch(q, orderQ, typeQ, channelID)
+	ytsearch, err := searchItems(q, orderQ, typeQ, channelID)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", 301)
+	}
 	t, _ := template.ParseFiles("./view/index.html")
 	t.Execute(w, ytsearch)
 }
 
-func ytSearch(q, orderQ, typeQ, channelIDQ string) (ytsearch YTSearch) {
+func addYTChannel(channelID string) (err error) {
+	client := &http.Client{
+		Transport: &transport.APIKey{Key: developerKey},
+	}
+
+	service, err := youtube.New(client)
+	if err != nil {
+		return err
+	}
+
+	call := service.Channels.List("snippet").Id(channelID)
+	response, err := call.Do()
+	if err != nil {
+		return err
+	}
+
+	item := response.Items[0].Snippet
+
+	_, err = dataBase.Insert(channelID, item.Title, item.Description, item.Thumbnails.High.Url)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func searchItems(q, orderQ, typeQ, channelIDQ string) (ytsearch ytSearch, err error) {
 	var call *youtube.SearchListCall
 	ytsearch.Query = q
 	ytsearch.Order = orderQ
@@ -114,7 +165,7 @@ func ytSearch(q, orderQ, typeQ, channelIDQ string) (ytsearch YTSearch) {
 
 	service, err := youtube.New(client)
 	if err != nil {
-		log.Fatal(err)
+		return ytsearch, err
 	}
 
 	if channelIDQ != "" {
@@ -134,12 +185,12 @@ func ytSearch(q, orderQ, typeQ, channelIDQ string) (ytsearch YTSearch) {
 
 	response, err := call.Do()
 	if err != nil {
-		log.Fatal(err)
+		return ytsearch, err
 	}
 
 	for _, item := range response.Items {
 		if ytsearch.Type == "playlist" {
-			ytsearch.Items = append(ytsearch.Items, YTItem{
+			ytsearch.Items = append(ytsearch.Items, ytItem{
 				ID:           item.Id.PlaylistId,
 				ChannelTitle: item.Snippet.ChannelTitle,
 				Title:        item.Snippet.Title,
@@ -150,7 +201,7 @@ func ytSearch(q, orderQ, typeQ, channelIDQ string) (ytsearch YTSearch) {
 				URL:          "https://www.youtube.com/playlist?list=" + item.Id.PlaylistId,
 			})
 		} else {
-			ytsearch.Items = append(ytsearch.Items, YTItem{
+			ytsearch.Items = append(ytsearch.Items, ytItem{
 				ID:           item.Id.VideoId,
 				ChannelTitle: item.Snippet.ChannelTitle,
 				Title:        item.Snippet.Title,
@@ -163,12 +214,12 @@ func ytSearch(q, orderQ, typeQ, channelIDQ string) (ytsearch YTSearch) {
 		}
 	}
 
-	ytsearch.RandURL = ThisIsRandUrl(ytsearch.Items)
+	ytsearch.RandURL = thisIsRandURL(ytsearch.Items)
 
-	return ytsearch
+	return ytsearch, nil
 }
 
-func ThisIsRandUrl(items []YTItem) (itemsURL []string) {
+func thisIsRandURL(items []ytItem) (itemsURL []string) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randPerm := r.Perm(len(items))
 	for _, randID := range randPerm {

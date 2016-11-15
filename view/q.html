@@ -5,6 +5,7 @@
     <title>YTSearch</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/index.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -44,6 +45,44 @@
 
 
         <button type="submit" name="button" class="btn btn-default">Найти</button>
+      </form>
+      <hr />
+      <div class="row">
+        {{range .}}
+        <div class="col-md-2">
+          <div class="thumbnail">
+            <a class="channel-delete" href="/channeldelete?channelid={{.ChannelID}}">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+            <a href="https://www.youtube.com/channel/{{.ChannelID}}">
+              <img src="{{.ThumbURL}}" alt="{{.Title}}"/>
+            </a>
+            <div class="caption">
+              <a href="https://www.youtube.com/channel/{{.ChannelID}}">
+                <h4>{{.Title}}</h4>
+              </a>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" area-haspopup="true" area-expanded="false">
+                  Последние <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a href="/q?query=&order=date&type=video&channelID={{.ChannelID}}&button=">Видео</a></li>
+                  <li><a href="/q?query=&order=date&type=playlist&channelID={{.ChannelID}}&button=">Плейлисты</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{end}}
+      </div>
+      <h3>Добавить канал</h3>
+      <form class="form" action="channeladd" method="post">
+        <div class="form-group">
+          <label for="InputID">ID Канала</label>
+          <input type="text" name="channel_id" placeholder="ID канала для добавления в БД" class="form-control">
+        </div>
+
+        <button type="submit" name="button" class="btn btn-default">Добавить</button>
       </form>
     </div>
   </body>
