@@ -17,7 +17,7 @@
       <h4>{{.Query}}</h4>
       <a class="btn btn-default" href="/">На Главную</a>
       <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду без видео</button>
-      <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=136/best {{range .RandURL}} {{.}} {{end}}">Скопировать команду с видео</button>
+      <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=136+bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду с видео</button>
 
       <div class="row">
         {{range .Items}}
@@ -32,7 +32,7 @@
               <p>{{.PublishedAT}}</p>
               <p>
                 <a href="https://www.youtube.com/channel/{{.ChannelID}}" class="btn btn-default">{{.ChannelTitle}}</a>
-                <button class="btn-btn-default jscopy right" data-clipboard-text="mpv --ytdl-format=136/best {{.URL}}">
+                <button class="btn-btn-default jscopy right" data-clipboard-text="mpv --ytdl-format=136+bestaudio {{.URL}}">
                   <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
                 </button>
               </p>
@@ -43,7 +43,7 @@
       </div>
     </div>
     <pre class="mpv">mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
-    <pre class="mpv">mpv --ytdl-format=136/best {{range .RandURL}} {{.}} {{end}}</pre>
+    <pre class="mpv">mpv --ytdl-format=136+bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
   </body>
   <script type="text/javascript" src="/static/index.js"></script>
 </html>

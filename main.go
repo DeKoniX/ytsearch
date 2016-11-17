@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
+	yaml "gopkg.in/yaml.v2"
+
 	"google.golang.org/api/googleapi/transport"
 	youtube "google.golang.org/api/youtube/v3"
 )
-
-const developerKey = "AIzaSyDnNqubCXqrNHD8w_GHsyRK7X6GU-k4MzU"
 
 type ytItem struct {
 	ID           string
@@ -37,10 +37,28 @@ type ytSearch struct {
 	RandURL   []string
 }
 
+type configYML struct {
+	YouTube struct {
+		DeveloperKey string
+	}
+	BasicAuth struct {
+		Username string
+		Password string
+	}
+}
+
 var dataBase DB
+var config configYML
 
 func main() {
-	dataBase, _ = initDB()
+	err := getConfig()
+	if err != nil {
+		log.Panic(err)
+	}
+	dataBase, err = initDB()
+	if err != nil {
+		log.Panic(err)
+	}
 
 	fs := http.FileServer(http.Dir("./view/static"))
 	http.Handle("/static/", http.StripPrefix("/static", fs))
@@ -55,8 +73,6 @@ func main() {
 
 func basicAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		username := "dekonix"
-		password := "hamster"
 		authError := func() {
 			w.Header().Set("WWW-Authenticate", "Basic realm=\"YTSearch\"")
 			http.Error(w, "authorization failed", http.StatusUnauthorized)
@@ -72,7 +88,7 @@ func basicAuth(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		pair := strings.SplitN(string(payload), ":", 2)
-		if len(pair) != 2 || !(pair[0] == username && pair[1] == password) {
+		if len(pair) != 2 || !(pair[0] == config.BasicAuth.Username && pair[1] == config.BasicAuth.Password) {
 			authError()
 			return
 		}
@@ -127,7 +143,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 
 func addYTChannel(channelID string) (err error) {
 	client := &http.Client{
-		Transport: &transport.APIKey{Key: developerKey},
+		Transport: &transport.APIKey{Key: config.YouTube.DeveloperKey},
 	}
 
 	service, err := youtube.New(client)
@@ -160,7 +176,7 @@ func searchItems(q, orderQ, typeQ, channelIDQ string) (ytsearch ytSearch, err er
 	}
 
 	client := &http.Client{
-		Transport: &transport.APIKey{Key: developerKey},
+		Transport: &transport.APIKey{Key: config.YouTube.DeveloperKey},
 	}
 
 	service, err := youtube.New(client)
@@ -227,4 +243,16 @@ func thisIsRandURL(items []ytItem) (itemsURL []string) {
 	}
 
 	return itemsURL
+}
+
+func getConfig() (err error) {
+	dat, err := ioutil.ReadFile("ytsearch.yml")
+	if err != nil {
+		return err
+	}
+	err = yaml.Unmarshal(dat, &config)
+	if err != nil {
+		return err
+	}
+	return nil
 }
