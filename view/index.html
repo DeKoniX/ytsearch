@@ -32,7 +32,7 @@
               <p>{{.PublishedAT}}</p>
               <p>
                 <a href="https://www.youtube.com/channel/{{.ChannelID}}" class="btn btn-default">{{.ChannelTitle}}</a>
-                <button class="btn-btn-default jscopy right" data-clipboard-text="mpv --ytdl-format=136+bestaudio {{.URL}}">
+                <button class="btn-btn-default jscopy right" id="copy-url" data-clipboard-text="mpv --ytdl-format=136+bestaudio {{.URL}}">
                   <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
                 </button>
               </p>
@@ -44,6 +44,9 @@
     </div>
     <pre class="mpv">mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
     <pre class="mpv">mpv --ytdl-format=136+bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
+    <div class="scrollup">
+      <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+    </div>
   </body>
   <script type="text/javascript" src="/static/index.js"></script>
 </html>

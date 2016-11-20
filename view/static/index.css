@@ -4,6 +4,29 @@
   color: black;
 }
 
+.channel-paste {
+  position: absolute;
+  top: 10px;
+  left: 37px;
+  color: black;
+}
+
 .right {
   float: right;
+}
+
+.scrollup {
+  position: fixed;
+  bottom: 30px;
+  width: 32px;
+  height: 32px;
+  font-size: 30px;
+  bottom: 10%;
+  left: 2%;
+  cursor: pointer;
+  display: none;
+}
+
+#copy-url {
+  font-size: 15px;
 }

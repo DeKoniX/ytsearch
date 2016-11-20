@@ -40,7 +40,7 @@
         </div>
         <div class="form-group">
           <label for="InputChan">ID канала</label>
-          <input type="text" name="channelID" placeholder="Оставте пустым если не используется" class="form-control">
+          <input id="channelID" type="text" name="channelID" placeholder="Оставте пустым если не используется" class="form-control">
         </div>
 
 
@@ -53,6 +53,9 @@
           <div class="thumbnail">
             <a class="channel-delete" href="/channeldelete?channelid={{.ChannelID}}">
               <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+            <a class="channel-paste" href="#" info="{{.ChannelID}}">
+              <span class="glyphicon glyphicon-paste" aria-hidden="true"></span>
             </a>
             <a href="https://www.youtube.com/channel/{{.ChannelID}}">
               <img src="{{.ThumbURL}}" alt="{{.Title}}"/>
@@ -85,5 +88,9 @@
         <button type="submit" name="button" class="btn btn-default">Добавить</button>
       </form>
     </div>
+    <div class="scrollup">
+      <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+    </div>
   </body>
+  <script type="text/javascript" src="/static/index.js"></script>
 </html>
