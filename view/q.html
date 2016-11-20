@@ -51,7 +51,7 @@
         {{range .}}
         <div class="col-md-2">
           <div class="thumbnail">
-            <a class="channel-delete" href="/channeldelete?channelid={{.ChannelID}}">
+            <a class="channel-delete" href="/channeldelete?channelid={{.ChannelID}}" onclick="return confirm('Вы уверены в удалении канала {{.Title}}?')">
               <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
             </a>
             <div class="channel-paste" info="{{.ChannelID}}">
