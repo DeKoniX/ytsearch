@@ -204,14 +204,20 @@ func searchItems(q, orderQ, typeQ, channelIDQ string) (ytsearch ytSearch, err er
 		return ytsearch, err
 	}
 
+	var thumb string
+
 	for _, item := range response.Items {
+		if item.Snippet.Thumbnails != nil {
+			thumb = item.Snippet.Thumbnails.High.Url
+		}
+
 		if ytsearch.Type == "playlist" {
 			ytsearch.Items = append(ytsearch.Items, ytItem{
 				ID:           item.Id.PlaylistId,
 				ChannelTitle: item.Snippet.ChannelTitle,
 				Title:        item.Snippet.Title,
 				Description:  item.Snippet.Description,
-				ThumbURL:     item.Snippet.Thumbnails.High.Url,
+				ThumbURL:     thumb,
 				ChannelID:    item.Snippet.ChannelId,
 				PublishedAT:  item.Snippet.PublishedAt,
 				URL:          "https://www.youtube.com/playlist?list=" + item.Id.PlaylistId,
@@ -222,7 +228,7 @@ func searchItems(q, orderQ, typeQ, channelIDQ string) (ytsearch ytSearch, err er
 				ChannelTitle: item.Snippet.ChannelTitle,
 				Title:        item.Snippet.Title,
 				Description:  item.Snippet.Description,
-				ThumbURL:     item.Snippet.Thumbnails.High.Url,
+				ThumbURL:     thumb,
 				ChannelID:    item.Snippet.ChannelId,
 				PublishedAT:  item.Snippet.PublishedAt,
 				URL:          "https://www.youtube.com/watch?v=" + item.Id.VideoId,
