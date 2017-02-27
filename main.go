@@ -33,6 +33,7 @@ type ytSearch struct {
 	Order     string
 	Type      string
 	ChannelID string
+	Language  string
 	Items     []ytItem
 	RandURL   []string
 }
@@ -131,8 +132,9 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	orderQ := r.FormValue("order")
 	typeQ := r.FormValue("type")
 	channelID := r.FormValue("channelID")
+	languageQ := r.FormValue("language")
 
-	ytsearch, err := searchItems(q, orderQ, typeQ, channelID)
+	ytsearch, err := searchItems(q, orderQ, typeQ, channelID, languageQ)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", 301)
@@ -166,11 +168,12 @@ func addYTChannel(channelID string) (err error) {
 	return nil
 }
 
-func searchItems(q, orderQ, typeQ, channelIDQ string) (ytsearch ytSearch, err error) {
+func searchItems(q, orderQ, typeQ, channelIDQ, languageQ string) (ytsearch ytSearch, err error) {
 	var call *youtube.SearchListCall
 	ytsearch.Query = q
 	ytsearch.Order = orderQ
 	ytsearch.Type = typeQ
+	ytsearch.Language = languageQ
 	if channelIDQ != "" {
 		ytsearch.ChannelID = channelIDQ
 	}
@@ -196,7 +199,8 @@ func searchItems(q, orderQ, typeQ, channelIDQ string) (ytsearch ytSearch, err er
 			Q(ytsearch.Query).
 			MaxResults(50).
 			Order(ytsearch.Order).
-			Type(ytsearch.Type)
+			Type(ytsearch.Type).
+			RelevanceLanguage(ytsearch.Language)
 	}
 
 	response, err := call.Do()
