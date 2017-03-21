@@ -133,13 +133,15 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	typeQ := r.FormValue("type")
 	channelID := r.FormValue("channelID")
 	languageQ := r.FormValue("language")
+	fmap := template.FuncMap{"split": split}
 
 	ytsearch, err := searchItems(q, orderQ, typeQ, channelID, languageQ)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", 301)
 	}
-	t, _ := template.ParseFiles("./view/index.html")
+	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles("./view/index.html"))
+	// t, _ := template.ParseFiles("./view/index.html")
 	t.Execute(w, ytsearch)
 }
 
@@ -265,4 +267,8 @@ func getConfig() (err error) {
 		return err
 	}
 	return nil
+}
+
+func split(a, b int) bool {
+	return a%b == 0
 }
