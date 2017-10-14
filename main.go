@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 
 	"google.golang.org/api/googleapi/transport"
-	youtube "google.golang.org/api/youtube/v3"
+	"google.golang.org/api/youtube/v3"
 )
 
 type ytItem struct {
@@ -97,15 +97,18 @@ func basicAuth(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func faviconHandler(w http.ResponseWriter, r *http.Request) {
+func faviconHandler(w http.ResponseWriter, _ *http.Request) {
 	file, _ := ioutil.ReadFile("view/favicon.png")
 	fmt.Fprint(w, string(file))
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	var p []Rows
 	p, _ = dataBase.Select()
-	t, _ := template.ParseFiles("./view/q.html")
+
+	fmap := template.FuncMap{"split": split}
+
+	t := template.Must(template.New("q.html").Funcs(fmap).ParseFiles("./view/q.html"))
 	t.Execute(w, p)
 }
 
@@ -141,7 +144,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 301)
 	}
 	t := template.Must(template.New("index.html").Funcs(fmap).ParseFiles("./view/index.html"))
-	// t, _ := template.ParseFiles("./view/index.html")
 	t.Execute(w, ytsearch)
 }
 

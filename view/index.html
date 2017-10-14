@@ -2,58 +2,75 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <title>YTSearch - {{.Query}}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/static/index.css">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
-    <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta charset="utf-8">
+  <title>YTSearch - {{.Query}}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/open-iconic-bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+          integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+          crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+          integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+  <link rel="icon" type="image/png" href="/favicon.png"/>
 </head>
 
 <body>
-    <div class="container">
-        <h3>Поиск плейлистов в YouTube</h3>
-        <h4>{{.Query}}</h4>
-        <a class="btn btn-default" href="/">На Главную</a>
-        <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду без видео</button>
-        <button class="btn btn-default jscopy" data-clipboard-text="mpv --ytdl-format=136+bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду с видео</button>
+<div class="container">
+  <h3>Поиск плейлистов в YouTube</h3>
+  <h4>{{.Query}}</h4>
+  <a class="btn btn-success active" href="/" role="button" aria-pressed="true">На Главную</a>
+  <button class="btn btn-outline-primary jscopy"
+          data-clipboard-text="mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду без
+    видео
+  </button>
+  <button class="btn btn-outline-primary jscopy"
+          data-clipboard-text="mpv --ytdl-format=136+bestaudio {{range .RandURL}} {{.}} {{end}}">Скопировать команду с
+    видео
+  </button>
+  <hr/>
 
-        <div class="row">
-            {{range $index, $ := .Items }} {{if split $index 3}}
-            <div class="clearfix hidden-xs"></div>
-            {{end}}
-            <div class="col-sm-6 col-md-4">
-                <div class="thumbnail">
-                    <a href="{{.URL}}">
-                        <img src="{{.ThumbURL}}" alt="{{.Title}}" />
-                    </a>
-                    <div class="caption">
-                        <a href="{{.URL}}">
-                            <h4>{{.Title}}</h4>
-                        </a>
-                        <p>{{.Description}}</p>
-                        <p>{{.PublishedAT}}</p>
-                        <p>
-                            <a href="https://www.youtube.com/channel/{{.ChannelID}}" class="btn btn-default">{{.ChannelTitle}}</a>
-                            <button class="btn-btn-default jscopy right" id="copy-url" data-clipboard-text="mpv --ytdl-format=136+bestaudio {{.URL}}">
-                  <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
-                </button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            {{end}}
+  <div class="row">
+    {{range $index, $ := .Items }} {{if split $index 3}}
+    <div class="clearfix d-none d-sm-block"></div>
+    {{end}}
+    <div class="col-sm-6 col-md-4">
+      <div class="card">
+        <a href="{{.URL}}">
+          <img class="card-img-top" src="{{.ThumbURL}}" alt="{{.Title}}"/>
+        </a>
+        <div class="card-body">
+          <a href="{{.URL}}">
+            <h5 class="card-title">{{.Title}}</h5>
+          </a>
+          <p class="card-text">{{.Description}}</p>
+          <p class="card-text">{{.PublishedAT}}</p>
+          <p>
+            <a href="https://www.youtube.com/channel/{{.ChannelID}}"
+               class="btn btn-outline-secondary">{{.ChannelTitle}}</a>
+            <button class="btn btn-outline-secondary jscopy right" id="copy-url"
+                    data-clipboard-text="mpv --ytdl-format=136+bestaudio {{.URL}}">
+              <span class="oi oi-cloud-upload" aria-hidden="true"></span>
+            </button>
+          </p>
         </div>
+      </div>
     </div>
-    <pre class="mpv">mpv --ytdl-format=bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
-    <pre class="mpv">mpv --ytdl-format=136+bestaudio {{range .RandURL}} {{.}} {{end}}</pre>
-    <div class="scrollup">
-        <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
-    </div>
+    {{end}}
+  </div>
+  <hr/>
+  <footer>
+    <p>&copy;DeKoniX 2017</p>
+  </footer>
+</div>
+<div class="scrollup">
+  <span class="oi oi-arrow-top" aria-hidden="true"></span>
+</div>
 </body>
-<script type="text/javascript" src="/static/index.js"></script>
+<script type="text/javascript" src="/static/js/index.js"></script>
 
 </html>

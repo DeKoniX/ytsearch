@@ -1,0 +1,36 @@
+.channel-delete {
+    position: absolute;
+    color: black;
+}
+
+.channel-paste {
+    position: absolute;
+    left: 20px;
+    top: 1px;
+    color: black;
+    cursor: pointer;
+}
+
+.right {
+    float: right;
+}
+
+.scrollup {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    font-size: 30px;
+    bottom: 10%;
+    left: 2%;
+    cursor: pointer;
+    display: none;
+}
+
+.card-body {
+    padding-left: 10px;
+    padding-right: 5px;
+}
+
+#copy-url {
+    font-size: 15px;
+}
