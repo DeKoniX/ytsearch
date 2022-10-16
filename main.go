@@ -157,7 +157,7 @@ func addYTChannel(channelID string) (err error) {
 		return err
 	}
 
-	call := service.Channels.List("snippet").Id(channelID)
+	call := service.Channels.List([]string{"snippet"}).Id(channelID)
 	response, err := call.Do()
 	if err != nil {
 		return err
@@ -192,14 +192,14 @@ func searchItems(q, orderQ, typeQ, channelIDQ, languageQ string) (ytsearch ytSea
 	}
 
 	if channelIDQ != "" {
-		call = service.Search.List("snippet").
+		call = service.Search.List([]string{"snippet"}).
 			Q(ytsearch.Query).
 			MaxResults(50).
 			Order(ytsearch.Order).
 			Type(ytsearch.Type).
 			ChannelId(ytsearch.ChannelID)
 	} else {
-		call = service.Search.List("snippet").
+		call = service.Search.List([]string{"snippet"}).
 			Q(ytsearch.Query).
 			MaxResults(50).
 			Order(ytsearch.Order).
